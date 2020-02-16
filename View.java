@@ -1,13 +1,11 @@
 package pracownicy;
 
-import java.io.*;
+
 import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Scanner;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
+
+
 
 public class View {
     protected
@@ -54,25 +52,28 @@ public class View {
         System.out.println("[Q] - powrót");
     }
 
+    boolean isPeselValid (String pesel){
+        PeselValidator temp = new PeselValidator(pesel);
+        return temp.isValid();
+    }
 
     Pracownik addEmployee() {
         System.out.println("2. Dodaj pracownika\n\n");
         System.out.format("%-20s    ", "[D]yrektor/[H]andlowiec:     ");
         String choice = scn.next();
-
+        boolean check;
 
         switch (choice) {
             case "d": {
                 Dyrektor temp = new Dyrektor();
                 temp.setStanowisko("Dyrektor");
                 System.out.println("-----------------------------------------------------");
-                PeselValidator isPeselValid;
                 do {
                     System.out.format("%-40s:    ", "Identyfikator PESEL ");
                     temp.setPesel(scn.next());
-                    isPeselValid = new PeselValidator(temp.getPesel());
+                    check = isPeselValid(temp.getPesel());
                 }
-                while (!isPeselValid.isValid());
+                while (!check);
                 System.out.format("%-40s:    ", "Imię ");
                 temp.setImie(scn.next());
                 System.out.format("%-40s:    ", "Nazwisko ");
@@ -106,8 +107,12 @@ public class View {
                 Handlowiec temp = new Handlowiec();
                 temp.setStanowisko("Handlowiec");
                 System.out.println("-----------------------------------------------------");
-                System.out.format("%-40s:    ", "Identyfikator PESEL ");
-                temp.setPesel(scn.next());
+                do {
+                    System.out.format("%-40s:    ", "Identyfikator PESEL ");
+                    temp.setPesel(scn.next());
+                    check = isPeselValid(temp.getPesel());
+                }
+                while (!check);
                 System.out.format("%-40s:    ", "Imię ");
                 temp.setImie(scn.next());
                 System.out.format("%-40s:    ", "Nazwisko ");
@@ -135,13 +140,12 @@ public class View {
                         throw new IllegalStateException("Unexpected value: " + choice2);
                 }
             }
-
             default:
                 throw new IllegalStateException("Unexpected value: " + choice);
         }
     }
 
-    Pracownik deleteEmployee(ArrayList<Pracownik> List) {
+    Pracownik deleteEmployee(ArrayList<Pracownik> database) {
         System.out.println("3. Usuń pracownika \n");
         System.out.format("%-40s:    ", "Podaj Identyfikator PESEL ");
         Pracownik temp = new Pracownik();
@@ -149,18 +153,18 @@ public class View {
         System.out.println("-----------------------------------------------------");
 
         boolean flag = false;
-        for (int i = 0; i < List.size(); i++) {
-            if (List.get(i).getPesel().equals(pesel)) {
-                temp = List.get(i);
+        for (Pracownik pracownik : database) {
+            if (pracownik.getPesel().equals(pesel)) {
+                temp = pracownik;
                 flag = true;
                 break;
             }
         }
-        if (flag == false) {
+        if (!flag) {
             System.out.println("Brak podanego nr PESEL w bazie \n");
             return null;
         } else if (temp instanceof Dyrektor) {
-            Dyrektor dyrektor = new Dyrektor();
+            Dyrektor dyrektor;
             dyrektor = (Dyrektor) temp;
             System.out.format("%-40s:    " + dyrektor.getImie() + "\n", "Imię ");
             System.out.format("%-40s:    " + dyrektor.getNazwisko() + "\n", "Nazwisko ");
@@ -185,7 +189,7 @@ public class View {
                     throw new IllegalStateException("Unexpected value: " + choice);
             }
         } else if (temp instanceof Handlowiec) {
-            Handlowiec handlowiec = new Handlowiec();
+            Handlowiec handlowiec;
             handlowiec = (Handlowiec) temp;
             System.out.format("%-40s:    " + handlowiec.getImie() + "\n", "Imię ");
             System.out.format("%-40s:    " + handlowiec.getNazwisko() + "\n", "Nazwisko ");
@@ -211,155 +215,68 @@ public class View {
         return temp;
     }
 
-    void backUp(ArrayList<Pracownik> List) {
+    String[] backUp() {
         System.out.println("4. Kopia zapasowa \n");
         System.out.format("%-20s:    ", "[Z]achowaj/[O]dtwórz ");
         String choice = scn.next();
+        String [] typeAndName = new String[2];
         switch (choice) {
             case "z": {
                 System.out.println("-----------------------------------------------------");
                 System.out.format("%-20s:    ", "Kompresja [G]zip/[Z]ip ");
-                String gzipOrZip = scn.next();
+                typeAndName[0]=(scn.next());
                 System.out.format("%-20s:    ", "Nazwa pliku ");
-                String fileName = scn.next();
+                typeAndName[1] = scn.next();
                 System.out.println("-----------------------------------------------------");
                 System.out.println("[ENTER] - potwierdź");
                 System.out.println("[Q] - porzuć");
                 String choice2 = scn.next();
                 switch (choice2) {
                     case ("e"): {
-                        if (gzipOrZip.equals("g")) {
-                            makeGzip(List, fileName);
-                            break;
-                        }
-                        if (gzipOrZip.equals("z")) {
-                            makeZip(List, fileName);
-                            break;
-                        }
+                        return typeAndName;
                     }
                     case ("q"): {
-                        System.out.println("");
-                        break;
+                        System.out.println();
+                        typeAndName[0]="q";
+                        return typeAndName;
                     }
                     default: {
                         throw new IllegalStateException("Unexpected value: " + choice2);
                     }
                 }
-                break;
             }
             case "o": {
+                typeAndName[0]="o";
                 System.out.println("-----------------------------------------------------");
                 System.out.format("%-20s:    ", "Nazwa pliku ");
-                String fileName = scn.next();
+                typeAndName[1] = scn.next();
                 System.out.println("-----------------------------------------------------");
                 System.out.println("[ENTER] - potwierdź");
                 System.out.println("[Q] - porzuć");
                 String choice2 = scn.next();
                 switch (choice2) {
                     case ("e"): {
-                        if (fileName.endsWith(".gzip")){
-                            List.clear();
-                            List.addAll(loadGzipFile (fileName));
-                            break;
-                        }
-                        else if (fileName.endsWith(".zip")){
-                            List.clear();
-                            List.addAll(loadZipFile (fileName));
-                            break;
-                        }
-                        else System.out.println("Niewłaściwe rozszerzenie. Nazwa pliku powinna kończyć się na .gzip lub .zip\n");
+                            return typeAndName;
                     }
                     case ("q"): {
-                        break;
+                        typeAndName[0]="quit";
+                        return typeAndName;
                     }
                     default: {
                         throw new IllegalStateException("Unexpected value: " + choice2);
                     }
                 }
             }
-            break;
         }
+        return null;
     }
 
-    public static void makeGzip(List vlo, String fileName) {
-        FileOutputStream fos = null;
-        GZIPOutputStream gos = null;
-        ObjectOutputStream oos = null;
-        try {
-            fos = new FileOutputStream(fileName+".gzip");
-            gos = new GZIPOutputStream(fos);
-            oos = new ObjectOutputStream(gos);
-            oos.writeObject(vlo);
-            oos.flush();
-            oos.close();
-            gos.close();
-            fos.close();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
+    public void peselIsInTheListError(){
+        System.out.println("Podany PESEL już istnieje w bazie\n");
     }
 
-    public static void makeZip(List vlo, String fileName) {
-        FileOutputStream fos = null;
-        ZipOutputStream zos = null;
-        ObjectOutputStream oos = null;
-        try {
-            fos = new FileOutputStream(fileName+".zip");
-            oos = new ObjectOutputStream(fos);
-            zos = new ZipOutputStream(oos);
-
-            oos.writeObject(vlo);
-            oos.flush();
-            zos.close();
-            oos.close();
-            fos.close();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-    }
-
-    public static ArrayList<Pracownik> loadGzipFile(String fileName) {
-        ArrayList<Pracownik> List = null;
-        FileInputStream fis = null;
-        GZIPInputStream gis = null;
-        ObjectInputStream ois = null;
-        try {
-            fis = new FileInputStream(fileName);
-            gis = new GZIPInputStream(fis);
-            ois = new ObjectInputStream(gis);
-
-            List = (ArrayList<Pracownik>) ois.readObject();
-            ois.close();
-            gis.close();
-            fis.close();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        } catch (ClassNotFoundException cnfe) {
-            cnfe.printStackTrace();
-        }
-        return List;
-    }
-
-    public static ArrayList<Pracownik> loadZipFile(String fileName) {
-        ArrayList<Pracownik> List = null;
-        FileInputStream fis = null;
-        ZipInputStream zis = null;
-        ObjectInputStream ois = null;
-        try {
-            fis = new FileInputStream(fileName);
-            ois = new ObjectInputStream(fis);
-            zis = new ZipInputStream(ois);
-
-            List = (ArrayList<Pracownik>) ois.readObject();
-            zis.close();
-            ois.close();
-            fis.close();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        } catch (ClassNotFoundException cnfe) {
-            cnfe.printStackTrace();
-        }
-        return List;
+    public void unexpectedFileNameError(){
+        System.out.println("Niewłaściwe rozszerzenie. Nazwa pliku powinna kończyć się na .gzip lub .zip\n");
     }
 
 }
