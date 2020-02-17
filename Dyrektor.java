@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 public class Dyrektor extends Pracownik implements Serializable {
-    protected
+    private
     BigDecimal dodatekSluzbowy;
     int numerKartySluzbowej;
     double limitKosztow;

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 public class Handlowiec extends Pracownik implements Serializable {
-    protected
+    private
     BigDecimal prowizja;
     double limitProwizji;
 
