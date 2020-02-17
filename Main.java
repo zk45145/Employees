@@ -12,7 +12,7 @@ public class Main {
         Scanner scn = new Scanner(System.in);
 
         while(true) {
-            controller.view.showMenu();
+            view.showMenu();
             int choice = scn.nextInt();
             switch (choice) {
                 case 1: {

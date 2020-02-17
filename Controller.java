@@ -3,7 +3,7 @@ package pracownicy;
 import java.util.Scanner;
 
 public class Controller {
-    protected
+    private
     View view;
     Model model;
 
@@ -16,9 +16,9 @@ public class Controller {
         Scanner scn = new Scanner(System.in);
         for (int i = 0; i < model.database.size(); i++) {
             if (model.database.get(i) instanceof Dyrektor)
-                view.showDirector(i + 1, model.database.size(), (Dyrektor) model.database.get(i));
+                view.showEmployee(i + 1, model.database.size(), (Dyrektor) model.database.get(i));
             else if (model.database.get(i) instanceof Handlowiec)
-                view.showSalesman(i + 1, model.database.size(), (Handlowiec) model.database.get(i));
+                view.showEmployee(i + 1, model.database.size(), (Handlowiec) model.database.get(i));
             String choice2 = scn.next();
             switch (choice2) {
                 case ("q"): {

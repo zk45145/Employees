@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 
 public class View {
-    protected
+    private
     Scanner scn = new Scanner(System.in);
 
     void showMenu() {
@@ -20,7 +20,7 @@ public class View {
         System.out.println("\nWybór> ");
     }
 
-    void showDirector(int current, int all, Dyrektor dyrektor) {
+    void showEmployee(int current, int all, Dyrektor dyrektor) {
         System.out.println("1. Lista pracowników\n\n");
         System.out.format("%-40s:    " + dyrektor.getPesel() + "\n", "Identyfikator PESEL ");
         System.out.format("%-40s:    " + dyrektor.getImie() + "\n", "Imię ");
@@ -37,7 +37,7 @@ public class View {
 
     }
 
-    void showSalesman(int current, int all, Handlowiec handlowiec) {
+    void showEmployee(int current, int all, Handlowiec handlowiec) {
         System.out.println("1. Lista pracowników\n\n");
         System.out.format("%-40s:    " + handlowiec.getPesel() + "\n", "Identyfikator PESEL ");
         System.out.format("%-40s:    " + handlowiec.getImie() + "\n", "Imię ");
@@ -72,6 +72,7 @@ public class View {
                     System.out.format("%-40s:    ", "Identyfikator PESEL ");
                     temp.setPesel(scn.next());
                     check = isPeselValid(temp.getPesel());
+                    if (!check) System.out.println("Nieprawidłowy PESEL - błędna suma kontrolna\n");
                 }
                 while (!check);
                 System.out.format("%-40s:    ", "Imię ");
@@ -111,6 +112,7 @@ public class View {
                     System.out.format("%-40s:    ", "Identyfikator PESEL ");
                     temp.setPesel(scn.next());
                     check = isPeselValid(temp.getPesel());
+                    if (!check) System.out.println("Niepoprawny PESEL\n");
                 }
                 while (!check);
                 System.out.format("%-40s:    ", "Imię ");
