@@ -1,2 +1,1 @@
-# say-hello-to-java
-java projects
+# Ewidencja pracowników w modelu MVC w trybie konsolowym z wykorzystaniem serializacji
